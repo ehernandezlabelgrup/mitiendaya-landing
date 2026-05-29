@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiTiendaYa — Tu tienda online, montada y mantenida</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;0,900;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Sora:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="image-slot.js"></script>
+<template id="__bundler_thumbnail" data-bg-color="#0a2540">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0a2540"/>
+    <circle cx="600" cy="320" r="150" fill="none" stroke="#635bff" stroke-width="22"/>
+    <path d="M535 320l45 45 90-95" fill="none" stroke="#b9a8ff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="600" y="560" font-family="Georgia, serif" font-size="92" font-weight="700" fill="#ffffff" text-anchor="middle">MiTiendaYa</text>
+    <rect x="560" y="600" width="80" height="8" rx="4" fill="#635bff"/>
+  </svg>
+</template>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#0a2540',
+          ink2: '#647196',
+          body: '#4a5568',
+          green: '#635bff',
+          greenDark: '#0a2540',
+          greenDeep: '#061a33',
+          gold: '#7c5cff',
+          goldSoft: '#b9a8ff',
+          wa: '#25d366',
+          waDark: '#1da851',
+          soft: '#f6f9fc',
+          line: '#e3e8ee',
+        },
+        fontFamily: {
+          serif: ['"Playfair Display"', 'Georgia', 'serif'],
+          sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        },
+        maxWidth: { shell: '1140px' },
+      }
+    }
+  }
+</script>
+<style>
+  html{scroll-behavior:smooth;scroll-padding-top:84px;}
+  body{font-family:"DM Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:#fff;color:#48564e;}
+  h1,h2,h3,h4{font-family:"Playfair Display",Georgia,serif;}
+
+  /* Stripe-style faint vertical guide lines flanking the content shell */
+  .guides{position:absolute;inset:0;pointer-events:none;z-index:0;}
+  .guides::before,.guides::after{
+    content:"";position:absolute;top:0;bottom:0;width:1px;
+    background:linear-gradient(180deg,transparent,rgba(14,32,24,.06) 8%,rgba(14,32,24,.06) 92%,transparent);
+  }
+  .guides::before{left:max(24px,calc(50% - 570px));}
+  .guides::after{right:max(24px,calc(50% - 570px));}
+
+  /* Hero flowing gradient ribbon — blue/purple/pink sweep (Stripe-style) */
+  .ribbon{
+    position:absolute;inset:-30% -16% -30% 24%;z-index:0;
+    background:
+      radial-gradient(32% 46% at 74% 12%, #8a7bff 0%, rgba(138,123,255,0) 58%),
+      radial-gradient(38% 54% at 95% 34%, #6f5cff 0%, rgba(111,92,255,0) 60%),
+      radial-gradient(44% 58% at 55% 26%, #5fa8ff 0%, rgba(95,168,255,0) 58%),
+      radial-gradient(58% 72% at 88% 62%, #b15cff 0%, rgba(177,92,255,0) 60%),
+      radial-gradient(40% 52% at 62% 94%, #7cc4ff 0%, rgba(124,196,255,0) 58%),
+      radial-gradient(46% 56% at 104% 84%, #ff7eb6 0%, rgba(255,126,182,0) 56%);
+    filter:blur(14px);
+    transform:rotate(-7deg) scale(1.08);
+    -webkit-mask:linear-gradient(101deg, transparent 8%, #000 34%, #000 100%);
+            mask:linear-gradient(101deg, transparent 8%, #000 34%, #000 100%);
+  }
+  .ribbon.b2{
+    inset:-12% -10% auto 38%;height:78%;filter:blur(46px);opacity:.5;
+    transform:rotate(10deg) scale(1.04);
+  }
+
+  /* button chevron nudge */
+  .chev{transition:transform .25s cubic-bezier(.22,.61,.36,1);}
+  .group:hover .chev{transform:translateX(4px);}
+
+  /* accordion */
+  .ans{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.22,.61,.36,1);}
+  .qa.open .pm{transform:rotate(180deg);}
+  .pm{transition:transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* reveal (JS-driven, for below-the-fold sections) */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.22,.61,.36,1),transform .8s cubic-bezier(.22,.61,.36,1);}
+  .reveal.in{opacity:1;transform:none;}
+  .d1{transition-delay:.07s;} .d2{transition-delay:.14s;} .d3{transition-delay:.21s;} .d4{transition-delay:.28s;}
+
+  /* rise (pure-CSS, for the hero — always completes regardless of JS) */
+  @keyframes riseIn{from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:none;}}
+  .rise{opacity:0;animation:riseIn .8s cubic-bezier(.22,.61,.36,1) both;}
+  .rise.d1{animation-delay:.08s;} .rise.d2{animation-delay:.16s;} .rise.d3{animation-delay:.24s;} .rise.d4{animation-delay:.34s;}
+
+  @media(prefers-reduced-motion:reduce){
+    .reveal,.rise{opacity:1;transform:none;transition:none;animation:none;} html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- ===================== HEADER ===================== -->
+<header id="hd" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+  <div class="max-w-shell mx-auto px-6 flex items-center gap-8 h-[72px]">
+    <a href="#top" class="no-underline flex items-center gap-2.5" style="height:36px">
+      <svg viewBox="0 0 96 96" height="36" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="35" width="60" height="47" rx="8" fill="#0a2540"/><path d="M12,24 Q12,19 17,19 H79 Q84,19 84,24 V34 a12,12 0 0 1 -24,0 a12,12 0 0 1 -24,0 a12,12 0 0 1 -24,0 Z" fill="#635bff"/><path d="M40,46 L40,73 L47,66 L51.4,75 L55.6,73 L51.2,64.2 L60,64 Z" fill="#ffffff"/></svg>
+      <span style="font-family:'Sora',system-ui,sans-serif;font-weight:700;font-size:18px;letter-spacing:-0.01em;color:#0a2540">MiTiendaYa<span style="color:#635bff">.</span></span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-[15px] font-medium text-ink/80">
+      <a href="#problema" class="hover:text-green transition-colors no-underline">Por qué</a>
+      <a href="#como" class="hover:text-green transition-colors no-underline">Cómo funciona</a>
+      <a href="#precios" class="hover:text-green transition-colors no-underline">Precios</a>
+      <a href="#faq" class="hover:text-green transition-colors no-underline">Preguntas</a>
+    </nav>
+    <div class="flex items-center gap-4 ml-auto">
+      <a href="#precios" class="hidden sm:inline-flex items-center gap-1 text-[15px] font-semibold text-ink no-underline group">Ver planes <span class="chev text-green">›</span></a>
+      <a href="https://wa.me/34600000000" target="_blank" rel="noopener" class="group inline-flex items-center gap-2 bg-wa hover:bg-waDark text-white font-semibold text-[14.5px] px-[18px] py-[10px] rounded-full no-underline transition-colors shadow-[0_8px_20px_-8px_rgba(37,211,102,.7)]">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ===================== HERO ===================== -->
+<section class="relative overflow-hidden bg-white" data-screen-label="Hero">
+  <div class="ribbon"></div>
+  <div class="ribbon b2"></div>
+  <div class="guides"></div>
+  <div class="relative z-10 max-w-shell mx-auto px-6 pt-36 pb-16 md:pt-44 md:pb-20">
+    <div class="rise inline-flex items-center gap-2.5 text-[13.5px] font-medium text-ink2 mb-7">
+      <span class="font-semibold text-ink">+120 comercios</span> ya venden online con MiTiendaYa
+    </div>
+    <h1 class="rise d1 font-extrabold text-ink leading-[1.03] tracking-[-.02em] text-[clamp(42px,6.4vw,78px)] max-w-[18ch]">
+      Tu tienda online, montada y mantenida.<br class="hidden sm:block">
+      <span class="text-ink2">Tú solo te encargas de vender.</span>
+    </h1>
+    <p class="rise d2 mt-8 text-[clamp(18px,1.55vw,21px)] text-body font-light max-w-[52ch] leading-relaxed">
+      Creamos tu tienda profesional con <span class="font-medium text-ink">PrestaShop</span>, la alojamos y la mantenemos por una cuota fija al mes. Pensado para comercios que aún no venden por internet: sin coste de alta, sin tecnicismos y sin permanencia.
+    </p>
+    <div class="rise d3 mt-9 flex flex-wrap items-center gap-4">
+      <a href="https://wa.me/34600000000" target="_blank" rel="noopener" class="group inline-flex items-center gap-2.5 bg-wa hover:bg-waDark text-white font-semibold text-[17px] px-7 py-4 rounded-full no-underline transition-all shadow-[0_16px_36px_-12px_rgba(37,211,102,.6)] hover:-translate-y-0.5">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+        Pedir demo gratuita
+      </a>
+      <a href="#como" class="group inline-flex items-center gap-1.5 bg-white border border-line hover:border-green/40 text-ink font-semibold text-[16px] px-6 py-4 rounded-full no-underline transition-all shadow-[0_2px_6px_rgba(14,32,24,.05)]">Ver cómo funciona <span class="chev text-green">›</span></a>
+    </div>
+  </div>
+
+  <!-- Tech / integrations strip -->
+  <div class="relative z-10 max-w-shell mx-auto px-6 pb-10">
+    <div class="rise d4 border-t border-line pt-7 flex flex-col sm:flex-row sm:items-center gap-x-10 gap-y-4">
+      <span class="text-[13px] font-semibold tracking-[.04em] uppercase text-ink2 shrink-0">Tu tienda, sobre tecnología de primer nivel</span>
+      <div class="flex flex-wrap items-center gap-x-10 gap-y-4 opacity-35">
+        <!-- Logo PrestaShop -->
+        <svg height="18" viewBox="0 0 567 63" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 1.1H23.26C39.95 1.1 47.52 12.68 47.52 22.71C47.52 32.74 39.95 44.32 23.26 44.32H15.96V61.74H0V1.1ZM21.7 30.65C28.08 30.65 31.09 26.82 31.09 22.72C31.09 18.62 28.08 14.79 21.7 14.79H15.95V30.66H21.7V30.65Z" fill="currentColor"/><path d="M55.78 1.1H78.94C95.63 1.1 103.02 12.68 103.02 22.71C103.02 28.91 100.19 35.57 94.27 39.85L105.12 61.74H87.15L78.76 44.32H71.74V61.74H55.78V1.1ZM77.03 30.65C83.5 30.65 86.61 26.82 86.61 22.72C86.61 18.62 83.51 14.79 77.03 14.79H71.74V30.66H77.03V30.65Z" fill="currentColor"/><path d="M113.93 1.1H153.97V14.32H129.89V24.62H150.5V37.84H129.89V48.51H154.97V61.73H113.93V1.1Z" fill="currentColor"/><path d="M162.79 41.13H178.93C179.2 46.78 184.31 49.16 189.14 49.16C193.52 49.16 197.71 47.24 197.71 44.05C197.71 35.2 163.69 42.23 163.69 18.88C163.69 7.39 173.54 0 187.13 0C204 0 212.39 10.12 213.03 22.16H196.89C196.62 16.87 192.79 13.68 187.68 13.68C183.3 13.68 180.11 15.14 180.11 18.7C180.11 29.37 214.13 20.16 214.13 44.05C214.13 55.45 204.01 62.84 189.42 62.84C173.55 62.84 163.52 55.18 162.79 41.14V41.13Z" fill="currentColor"/><path d="M234.08 15.23H217.03V1.09H267.19V15.23H250.04V61.74H234.08V15.23Z" fill="currentColor"/><path d="M282.99 1.1H302.96L323.75 61.75H306.88L303.5 50.9H281.98L278.61 61.75H262.1L282.98 1.1H282.99ZM299.32 37.67L292.75 16.88L286.18 37.67H299.31H299.32Z" fill="currentColor"/><path d="M326.27 41.13H342.41C342.68 46.78 347.79 49.16 352.62 49.16C357 49.16 361.19 47.24 361.19 44.05C361.19 35.2 327.17 42.23 327.17 18.88C327.17 7.39 337.02 0 350.61 0C367.48 0 375.87 10.12 376.51 22.16H360.37C360.1 16.87 356.27 13.68 351.16 13.68C346.78 13.68 343.59 15.14 343.59 18.7C343.59 29.37 377.61 20.16 377.61 44.05C377.61 55.45 367.49 62.84 352.9 62.84C337.03 62.84 327 55.18 326.27 41.14V41.13Z" fill="currentColor"/><path d="M387.34 1.1H403.3V24.36H424.91V1.1H440.87V61.75H424.91V37.58H403.3V61.75H387.34V1.1Z" fill="currentColor"/><path d="M449.55 31.28C449.55 12.68 461.95 0 480.1 0C498.25 0 510.74 12.68 510.74 31.28C510.74 49.88 498.34 62.83 480.1 62.83C461.86 62.83 449.55 50.06 449.55 31.28ZM480.1 49.15C488.58 49.15 494.33 41.85 494.33 31.28C494.33 20.71 488.58 13.68 480.1 13.68C471.62 13.68 465.96 20.79 465.96 31.28C465.96 41.77 471.71 49.15 480.1 49.15Z" fill="currentColor"/><path d="M519.41 1.1H542.66C559.35 1.1 566.92 12.68 566.92 22.71C566.92 32.74 559.35 44.32 542.66 44.32H535.36V61.74H519.4V1.1H519.41ZM541.12 30.65C547.5 30.65 550.51 26.82 550.51 22.72C550.51 18.62 547.5 14.79 541.12 14.79H535.37V30.66H541.12V30.65Z" fill="currentColor"/></svg>
+        <!-- Logo Stripe -->
+        <img src="/stripe-logo.png" alt="Stripe" style="height:30px;width:auto;">
+        <!-- PayPal wordmark -->
+        <svg height="20" viewBox="0 0 101 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.238 2.167H4.932a.97.97 0 00-.957.819L.985 22.565a.582.582 0 00.574.673h3.492a.97.97 0 00.958-.819l.87-5.516a.97.97 0 01.957-.82h2.31c4.808 0 7.583-2.327 8.312-6.94.327-2.018.013-3.603-.93-4.714-1.036-1.225-2.874-1.262-4.29-1.262zm.844 6.841c-.399 2.617-2.4 2.617-4.337 2.617h-1.1l.773-4.889a.582.582 0 01.574-.491h.504c1.318 0 2.563 0 3.206.751.384.449.501 1.115.38 2.012zm21.003-.083h-3.505a.582.582 0 00-.574.491l-.148.937-.234-.34c-.724-1.05-2.337-1.402-3.949-1.402-3.695 0-6.851 2.8-7.468 6.727-.32 1.959.134 3.832 1.241 5.137 1.018 1.198 2.47 1.695 4.2 1.695 2.98 0 4.633-1.916 4.633-1.916l-.15.929a.582.582 0 00.574.674h3.157a.97.97 0 00.957-.82l1.895-12.001a.582.582 0 00-.574-.673l-.055.362zm-4.88 6.499c-.323 1.91-1.843 3.194-3.773 3.194-.97 0-1.745-.312-2.243-.903-.494-.587-.681-1.424-.524-2.356.302-1.893 1.844-3.219 3.744-3.219.949 0 1.72.315 2.228.911.51.601.712 1.444.568 2.373zm23.662-6.499H49.35a.97.97 0 00-.8.421l-4.618 6.8-1.958-6.537a.97.97 0 00-.929-.684h-3.444a.582.582 0 00-.552.77l3.687 10.822-3.467 4.892a.582.582 0 00.475.92h3.51a.968.968 0 00.797-.415L53.39 9.598a.582.582 0 00-.474-.923l.051.25zM64.368 2.167h-7.305a.97.97 0 00-.957.819L53.12 22.565a.582.582 0 00.574.673h3.747a.679.679 0 00.67-.574l.918-5.761a.97.97 0 01.957-.82h2.31c4.808 0 7.582-2.327 8.312-6.94.327-2.018.013-3.603-.93-4.714-1.037-1.225-2.875-1.262-4.31-1.262zm.843 6.841c-.398 2.617-2.4 2.617-4.336 2.617h-1.1l.772-4.889a.582.582 0 01.574-.491h.504c1.319 0 2.563 0 3.207.751.383.449.5 1.115.38 2.012zm21.002-.083h-3.504a.582.582 0 00-.574.491l-.148.937-.235-.34c-.724-1.05-2.336-1.402-3.948-1.402-3.695 0-6.852 2.8-7.468 6.727-.32 1.959.134 3.832 1.24 5.137 1.02 1.198 2.47 1.695 4.2 1.695 2.98 0 4.634-1.916 4.634-1.916l-.15.929a.582.582 0 00.574.674h3.157a.97.97 0 00.957-.82l1.894-12.001a.582.582 0 00-.574-.673l-.055.362zm-4.88 6.499c-.322 1.91-1.842 3.194-3.772 3.194-.97 0-1.745-.312-2.244-.903-.493-.587-.68-1.424-.523-2.356.302-1.893 1.844-3.219 3.743-3.219.95 0 1.72.315 2.229.911.509.601.711 1.444.567 2.373zm8.088-12.84l-3.13 19.91a.582.582 0 00.574.674h3.02a.97.97 0 00.958-.82l3.084-19.577a.582.582 0 00-.573-.674h-3.36a.582.582 0 00-.573.487z" fill="currentColor"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STATS ===================== -->
+<section class="relative bg-white pb-8 md:pb-16" data-screen-label="Datos">
+  <div class="guides"></div>
+  <div class="relative max-w-shell mx-auto px-6">
+    <div class="reveal grid grid-cols-1 sm:grid-cols-3 gap-px bg-line rounded-2xl overflow-hidden border border-line">
+      <div class="bg-white px-8 py-7">
+        <div class="font-serif font-bold text-green text-[clamp(30px,3.4vw,40px)] leading-none">7 días</div>
+        <div class="mt-2.5 text-[14.5px] text-ink2">tu tienda en marcha</div>
+      </div>
+      <div class="bg-white px-8 py-7">
+        <div class="font-serif font-bold text-green text-[clamp(30px,3.4vw,40px)] leading-none">0&nbsp;€</div>
+        <div class="mt-2.5 text-[14.5px] text-ink2">de coste de setup</div>
+      </div>
+      <div class="bg-white px-8 py-7">
+        <div class="font-serif font-bold text-green text-[clamp(30px,3.4vw,40px)] leading-none">desde 89&nbsp;€</div>
+        <div class="mt-2.5 text-[14.5px] text-ink2">al mes, todo incluido</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROBLEMA ===================== -->
+<section id="problema" class="relative bg-white py-24 md:py-32" data-screen-label="Problema">
+  <div class="guides"></div>
+  <div class="relative max-w-shell mx-auto px-6">
+    <div class="reveal max-w-[640px]">
+      <div class="text-[13px] font-semibold tracking-[.04em] text-gold uppercase mb-4">Suena familiar</div>
+      <h2 class="font-bold text-ink tracking-[-.01em] text-[clamp(30px,3.8vw,46px)] leading-[1.08]">
+        Vender en internet no debería <span class="text-ink2">costar un disgusto.</span>
+      </h2>
+      <p class="mt-5 text-[18px] text-body font-light leading-relaxed">La mayoría de comercios pequeños se quedan fuera por los mismos tres motivos. Te los quitamos de encima.</p>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-3 gap-6">
+      <div class="reveal d1 group rounded-2xl bg-white border border-line p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_50px_-34px_rgba(14,32,24,.35)] hover:border-green/30">
+        <div class="w-12 h-12 rounded-xl bg-soft grid place-items-center mb-6">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>
+        </div>
+        <h3 class="font-bold text-ink text-[21px] leading-snug mb-3">La competencia ya vende online</h3>
+        <p class="text-[15.5px] text-body leading-relaxed">Mientras tú atiendes el mostrador, el negocio de al lado factura por internet a todas horas. Cada día sin tienda es venta que se va a otra parte.</p>
+      </div>
+      <div class="reveal d2 group rounded-2xl bg-white border border-line p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_50px_-34px_rgba(14,32,24,.35)] hover:border-green/30">
+        <div class="w-12 h-12 rounded-xl bg-soft grid place-items-center mb-6">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/><path d="M3 9l4 4M7 9l-4 4"/></svg>
+        </div>
+        <h3 class="font-bold text-ink text-[21px] leading-snug mb-3">Tu web vieja pierde a los móviles</h3>
+        <p class="text-[15.5px] text-body leading-relaxed">Si tienes web, seguramente se ve mal en el móvil y nadie la actualiza. El 80% de tus clientes te buscan desde el teléfono y se van sin comprar.</p>
+      </div>
+      <div class="reveal d3 group rounded-2xl bg-white border border-line p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_50px_-34px_rgba(14,32,24,.35)] hover:border-green/30">
+        <div class="w-12 h-12 rounded-xl bg-soft grid place-items-center mb-6">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <h3 class="font-bold text-ink text-[21px] leading-snug mb-3">Las agencias cobran miles de setup</h3>
+        <p class="text-[15.5px] text-body leading-relaxed">Te piden 3.000&nbsp;€ por montarla y luego desaparecen. Cualquier cambio es otra factura. Para un comercio pequeño, sencillamente no salen las cuentas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CÓMO FUNCIONA ===================== -->
+<section id="como" class="relative bg-soft py-24 md:py-32" data-screen-label="Cómo funciona">
+  <div class="guides"></div>
+  <div class="relative max-w-shell mx-auto px-6">
+    <div class="reveal max-w-[640px]">
+      <div class="text-[13px] font-semibold tracking-[.04em] text-gold uppercase mb-4">Así de fácil</div>
+      <h2 class="font-bold text-ink tracking-[-.01em] text-[clamp(30px,3.8vw,46px)] leading-[1.08]">
+        Tú nos cuentas. <span class="text-ink2">Nosotros hacemos el resto.</span>
+      </h2>
+      <p class="mt-5 text-[18px] text-body font-light leading-relaxed">Sin reuniones interminables ni jerga técnica. En tres pasos tienes tu tienda funcionando y ganando clientes.</p>
+    </div>
+
+    <div class="mt-16 grid md:grid-cols-3 gap-10">
+      <div class="reveal d1">
+        <div class="flex items-center gap-4">
+          <span class="font-serif font-semibold text-gold text-[56px] leading-none">01</span>
+          <span class="flex-1 h-px bg-line"></span>
+        </div>
+        <h3 class="font-bold text-ink text-[23px] mt-5 mb-3">Cuéntanos tu negocio</h3>
+        <p class="text-[15.5px] text-body leading-relaxed max-w-[34ch]">Una llamada de 20 minutos por WhatsApp o videollamada. Qué vendes, cómo y a quién. De ahí sacamos todo lo que necesitamos.</p>
+        <span class="inline-flex items-center gap-2 mt-4 text-[13px] font-semibold text-green">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          20 minutos, sin compromiso
+        </span>
+      </div>
+      <div class="reveal d2">
+        <div class="flex items-center gap-4">
+          <span class="font-serif font-semibold text-gold text-[56px] leading-none">02</span>
+          <span class="flex-1 h-px bg-line"></span>
+        </div>
+        <h3 class="font-bold text-ink text-[23px] mt-5 mb-3">La montamos en 7 días</h3>
+        <p class="text-[15.5px] text-body leading-relaxed max-w-[34ch]">Diseño, catálogo, pagos, envíos y dominio. Te la entregamos lista para vender y revisamos juntos cada detalle antes de publicar.</p>
+        <span class="inline-flex items-center gap-2 mt-4 text-[13px] font-semibold text-green">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+          Llave en mano
+        </span>
+      </div>
+      <div class="reveal d3">
+        <div class="flex items-center gap-4">
+          <span class="font-serif font-semibold text-gold text-[56px] leading-none">03</span>
+        </div>
+        <h3 class="font-bold text-ink text-[23px] mt-5 mb-3">Tú vendes, nosotros mantenemos</h3>
+        <p class="text-[15.5px] text-body leading-relaxed max-w-[34ch]">Actualizaciones, copias de seguridad, seguridad y soporte corren de nuestra cuenta. Tú solo te dedicas a despachar pedidos.</p>
+        <span class="inline-flex items-center gap-2 mt-4 text-[13px] font-semibold text-green">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1018 0 9 9 0 00-18 0z"/><path d="M12 7v5l3 2"/></svg>
+          Mantenimiento continuo
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRICING ===================== -->
+<section id="precios" class="relative bg-white py-24 md:py-32" data-screen-label="Precios">
+  <div class="guides"></div>
+  <div class="relative max-w-shell mx-auto px-6">
+    <div class="reveal max-w-[680px] mx-auto text-center">
+      <div class="text-[13px] font-semibold tracking-[.04em] text-gold uppercase mb-4">Planes</div>
+      <h2 class="font-bold text-ink tracking-[-.01em] text-[clamp(30px,3.8vw,46px)] leading-[1.08]">
+        Una cuota fija. <span class="text-ink2">Todo incluido.</span>
+      </h2>
+      <p class="mt-5 text-[18px] text-body font-light leading-relaxed">Elige el tamaño que necesitas hoy y cámbialo cuando quieras. Sin coste de alta, sin permanencia.</p>
+    </div>
+
+    <div class="mt-16 grid md:grid-cols-3 gap-6 items-start">
+      <!-- Starter -->
+      <div class="reveal d1 rounded-2xl bg-white border border-line p-8 flex flex-col transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_54px_-34px_rgba(10,37,64,.18)]">
+        <div class="font-serif font-bold text-[22px] text-ink">Starter</div>
+        <p class="mt-2 text-[14px] text-ink2 min-h-[42px]">Para empezar a vender sin complicarte.</p>
+        <div class="mt-5 flex items-end gap-1.5">
+          <span class="font-serif font-bold text-ink text-[46px] leading-none">89&nbsp;€</span>
+          <span class="text-[15px] text-ink2 pb-1.5">/ mes</span>
+        </div>
+        <ul class="mt-7 mb-5 flex flex-col gap-3.5 flex-1 list-none p-0">
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hasta 200 productos</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>1 theme profesional</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Pagos con Stripe + PayPal</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hosting incluido</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Academia de vídeos completa</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Soporte por ticket en 48&nbsp;h</li>
+        </ul>
+        <p class="text-[13px] text-ink2/80 mb-7 leading-relaxed">Envíos: gestión manual · Dominio aparte (te ayudamos a conectarlo).</p>
+        <a href="https://wa.me/34600000000" target="_blank" rel="noopener" class="group block text-center font-semibold text-[15.5px] py-3.5 rounded-full border-[1.5px] border-green text-green no-underline transition-all hover:bg-green hover:text-white">Empezar con Starter</a>
+      </div>
+
+      <!-- Growth (featured) -->
+      <div class="reveal d2 relative rounded-2xl bg-greenDark text-white p-8 flex flex-col shadow-[0_40px_70px_-32px_rgba(10,37,64,.6)] md:-mt-4 md:mb-[-4px]">
+        <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gold text-white text-[12px] font-bold tracking-[.06em] uppercase px-4 py-1.5 rounded-full whitespace-nowrap">El más elegido</span>
+        <div class="font-serif font-bold text-[22px] text-goldSoft">Growth</div>
+        <p class="mt-2 text-[14px] text-white/70 min-h-[42px]">Para comercios que ya venden y quieren crecer.</p>
+        <div class="mt-5 flex items-end gap-1.5">
+          <span class="font-serif font-bold text-goldSoft text-[46px] leading-none">199&nbsp;€</span>
+          <span class="text-[15px] text-white/70 pb-1.5">/ mes</span>
+        </div>
+        <p class="mt-7 text-[13.5px] font-semibold text-white/55 uppercase tracking-[.04em]">Todo lo de Starter, y además:</p>
+        <ul class="mt-4 mb-7 flex flex-col gap-3.5 flex-1 list-none p-0">
+          <li class="flex gap-3 text-[15px] text-white/90"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b9a8ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Hasta 2.000 productos</li>
+          <li class="flex gap-3 text-[15px] text-white/90"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b9a8ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Diseño personalizado con tu logo y colores</li>
+          <li class="flex gap-3 text-[15px] text-white/90"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b9a8ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Redsys (TPV bancario) + Stripe + PayPal</li>
+          <li class="flex gap-3 text-[15px] text-white/90"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b9a8ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Envíos configurados: Nacex, Correos, MRW, GLS…</li>
+          <li class="flex gap-3 text-[15px] text-white/90"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#b9a8ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Soporte en 24&nbsp;h + videollamada trimestral</li>
+        </ul>
+        <a href="https://wa.me/34600000000" target="_blank" rel="noopener" class="group block text-center font-semibold text-[15.5px] py-3.5 rounded-full bg-wa hover:bg-waDark text-white no-underline transition-all shadow-[0_14px_30px_-12px_rgba(37,211,102,.6)]">Pedir demo de Growth</a>
+      </div>
+
+      <!-- Pro -->
+      <div class="reveal d3 rounded-2xl bg-white border border-line p-8 flex flex-col transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_54px_-34px_rgba(10,37,64,.18)]">
+        <div class="font-serif font-bold text-[22px] text-ink">Pro</div>
+        <p class="mt-2 text-[14px] text-ink2 min-h-[42px]">Para quien necesita todo a su medida.</p>
+        <div class="mt-5 flex items-end gap-1.5">
+          <span class="font-serif font-bold text-ink text-[46px] leading-none">349&nbsp;€</span>
+          <span class="text-[15px] text-ink2 pb-1.5">/ mes</span>
+        </div>
+        <p class="mt-7 text-[13.5px] font-semibold text-ink2 uppercase tracking-[.04em]">Todo lo de Growth, y además:</p>
+        <ul class="mt-4 mb-7 flex flex-col gap-3.5 flex-1 list-none p-0">
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Productos ilimitados</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Diseño 100% custom a medida</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Pagos y envíos a medida</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Facturación integrada (Holded, Sage, A3)</li>
+          <li class="flex gap-3 text-[15px] text-ink"><svg class="shrink-0 mt-0.5" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#635bff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Soporte prioritario inmediato + videollamada mensual</li>
+        </ul>
+        <a href="https://wa.me/34600000000" target="_blank" rel="noopener" class="group block text-center font-semibold text-[15.5px] py-3.5 rounded-full border-[1.5px] border-green text-green no-underline transition-all hover:bg-green hover:text-white">Hablar de Pro</a>
+      </div>
+    </div>
+
+    <!-- Funcionalidades por categoría -->
+    <div class="reveal mt-20 mb-12">
+      <h3 class="font-serif font-bold text-ink text-[clamp(26px,3vw,38px)] leading-tight">Todo lo que incluye tu tienda</h3>
+      <p class="mt-3 text-[17px] text-body font-light max-w-[58ch]">Funcionalidades listas desde el primer día. Las marcadas con plan se activan a partir de Growth o Pro.</p>
+    </div>
+    <div class="reveal grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-9 gap-y-12">
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Catálogo y productos</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>200, 2.000 o ilimitados</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Fichas optimizadas</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Categorías, filtros y buscador</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Control de stock</li>
+        </ul>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 11l8 4 8-4"/><path d="M4 15l8 4 8-4"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Diseño profesional</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Theme profesional</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Tu logo y tus colores <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#635bff]/10 text-[#635bff] ml-1">Growth</span></li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>100% adaptado a móvil</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Diseño 100% custom <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#0a2540]/10 text-[#0a2540] ml-1">Pro</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Pagos integrados</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Stripe y PayPal</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Redsys · TPV bancario <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#635bff]/10 text-[#635bff] ml-1">Growth</span></li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Métodos a medida <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#0a2540]/10 text-[#0a2540] ml-1">Pro</span></li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Pagos seguros y cifrados</li>
+        </ul>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16V6h11v10M14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Envíos configurados</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Nacex, Correos, MRW, GLS <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#635bff]/10 text-[#635bff] ml-1">Growth</span></li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Cálculo automático de tarifas</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Seguimiento para el cliente</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Configuración a medida <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#0a2540]/10 text-[#0a2540] ml-1">Pro</span></li>
+        </ul>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Hosting y mantenimiento</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Alojamiento rápido incluido</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Copias de seguridad</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Actualizaciones y parches</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Certificado SSL y seguridad</li>
+        </ul>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Soporte cercano</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Atención por ticket (24-48&nbsp;h)</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Videollamadas de estrategia</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Atención prioritaria <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#0a2540]/10 text-[#0a2540] ml-1">Pro</span></li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Siempre en español</li>
+        </ul>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 9l5 3-5 3z"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Academia para vender</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Vídeos paso a paso</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Gestiona tu tienda sin depender de nadie</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Trucos para vender más</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Acceso completo incluido</li>
+        </ul>
+      </div>
+      <div>
+        <div class="w-11 h-11 rounded-xl bg-[#eef0fe] grid place-items-center mb-5"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#635bff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h6"/></svg></div>
+        <h4 class="font-semibold text-ink text-[16px] leading-snug border-l-2 border-green pl-3 mb-4">Facturación y datos</h4>
+        <ul class="flex flex-col gap-3 list-none p-0">
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Holded, Sage, A3 <span class="inline-flex items-center text-[11px] font-bold tracking-wide uppercase px-2 py-0.5 rounded-full bg-[#0a2540]/10 text-[#0a2540] ml-1">Pro</span></li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Sincronización de pedidos</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Tus datos siempre son tuyos</li>
+          <li class="flex gap-2.5 text-[14.5px] text-body"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#635bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="M20 6L9 17l-5-5"/></svg>Exportación completa si cancelas</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="reveal mt-10 text-center text-[15px] text-ink2"><b class="text-ink font-semibold">Hosting incluido</b> en todos los planes · No pagas hasta que tu tienda está online · <b class="text-ink font-semibold">Sin permanencia.</b> Cancela cuando quieras.</p>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq" class="relative bg-soft py-24 md:py-32" data-screen-label="Preguntas">
+  <div class="guides"></div>
+  <div class="relative max-w-shell mx-auto px-6">
+    <div class="reveal max-w-[680px] mb-12">
+      <div class="text-[13px] font-semibold tracking-[.04em] text-gold uppercase mb-4">Preguntas frecuentes</div>
+      <h2 class="font-bold text-ink tracking-[-.01em] text-[clamp(28px,3.4vw,42px)] leading-[1.1]">Lo que todo el mundo nos pregunta.</h2>
+    </div>
+
+    <div class="reveal max-w-[900px] mx-auto rounded-lg border border-line bg-white overflow-hidden divide-y divide-line">
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Necesito saber de tecnología?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Para nada. Esa es justo la idea. Tú nos cuentas qué vendes y nosotros nos ocupamos de toda la parte técnica: montaje, dominio, pagos, seguridad y actualizaciones. Si sabes usar WhatsApp, sabes gestionar tu tienda.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Qué pasa si cancelo?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">No hay permanencia. Avisas y dejas de pagar el mes siguiente, sin penalizaciones. Te entregamos una exportación completa de tu catálogo y tus clientes para que te lleves toda tu información contigo.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Incluye el dominio?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">El <em>hosting</em> y el mantenimiento están incluidos en la cuota. El dominio lo compras tú (unos 10-15&nbsp;€ al año, así queda siempre a tu nombre) y nosotros te guiamos paso a paso para conectarlo. Si ya tienes uno, lo enlazamos sin coste y sin cortes.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Cuánto tarda en estar lista?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Siete días laborables desde que nos pasas tus productos y tu logo. Si tienes prisa por una campaña concreta, dínoslo y nos organizamos para llegar a tu fecha.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Puedo cambiar de plan más adelante?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Cuando quieras, en cualquier dirección. Subes de plan según crece tu catálogo o tus ventas, y bajas si tu temporada es más tranquila. El cambio es inmediato y solo pagas la diferencia prorrateada.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Tengo que instalar algo o saber programar?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">No. Nosotros nos encargamos de toda la instalación, configuración y puesta en marcha. Tú solo necesitas un ordenador o móvil para gestionar tu tienda desde el panel de administración, que es tan sencillo como cualquier red social.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Puedo subir mis productos yo mismo?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Sí. Una vez tu tienda esté online tienes acceso completo para añadir, editar o eliminar productos cuando quieras. En el lanzamiento nos encargamos nosotros de subir el catálogo inicial. Además, la academia de vídeos incluida te explica cómo hacerlo paso a paso.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Qué pasa si mi tienda se cae o tiene un problema técnico?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Nos avisas y lo resolvemos. Las incidencias técnicas están incluidas en todos los planes. Realizamos copias de seguridad diarias, así que en el peor caso tu tienda se puede restaurar en minutos. Nuestro objetivo es que nunca pierdas una venta por un problema técnico.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Necesito una TPV física o un contrato con el banco?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Para el plan Starter no. Con Stripe y PayPal empiezas a cobrar online en minutos, sin contratos bancarios. En el plan Growth añadimos Redsys (TPV virtual bancario) si tu banco ya te lo ofrece o te ayudamos a contratarlo. Te guiamos en todo el proceso.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Puedo vender también en redes sociales desde la misma tienda?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Sí. Puedes enlazar tu tienda con tus perfiles de Instagram y Facebook para que los clientes que te encuentran en redes lleguen directamente a comprar. Es algo que configuramos durante el lanzamiento sin coste adicional.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Cómo funciona Stripe? ¿Me cobra algo por cada venta?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Stripe es la pasarela de pago incluida en todos los planes. Tus clientes pagan con tarjeta directamente en tu tienda y el dinero llega a tu cuenta bancaria. Stripe cobra una pequeña comisión por transacción (1,5% + 0,25€ para tarjetas europeas), que corre a tu cargo como parte normal de vender online. No hay cuota mensual de Stripe — solo pagas cuando vendes.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Qué es Redsys y desde qué plan puedo usarlo?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Redsys es la pasarela de pago de los bancos españoles (BBVA, Santander, CaixaBank, Sabadell…). Con ella tus clientes pagan con tarjeta a través del TPV virtual de tu banco, igual que en cualquier tienda física. Está disponible a partir del plan <strong>Growth</strong>. Para activarlo solo necesitas un TPV virtual contratado con tu banco — si no lo tienes, te ayudamos a solicitarlo.</p></div>
+      </div>
+      <div class="qa">
+        <button type="button" class="w-full flex items-center justify-between gap-5 text-left px-6 py-5 cursor-pointer">
+          <span class="font-sans font-semibold text-[16.5px] text-ink">¿Puedo tener Stripe y Redsys a la vez en mi tienda?</span>
+          <span class="pm shrink-0 w-7 h-7 rounded-full bg-green grid place-items-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="ans"><p class="px-6 pb-5 text-[16px] text-body leading-relaxed">Sí, y es lo recomendable. Con el plan Growth activas Stripe + PayPal + Redsys simultáneamente. Tus clientes eligen cómo pagar en el checkout: con tarjeta vía Stripe, con su cuenta PayPal o con el TPV de su banco vía Redsys. Más opciones de pago = más ventas completadas.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FINAL CTA ===================== -->
+<section class="relative bg-greenDark text-white overflow-hidden" data-screen-label="CTA final">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(70% 120% at 50% -10%,rgba(124,92,255,.28),transparent 60%);"></div>
+  <div class="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none" style="background:radial-gradient(55% 130% at 28% 130%, rgba(95,168,255,.34), transparent 60%), radial-gradient(55% 130% at 76% 130%, rgba(177,92,255,.4), transparent 60%);filter:blur(18px);"></div>
+  <div class="relative max-w-shell mx-auto px-6 py-28 md:py-32 text-center">
+    <div class="reveal inline-flex items-center gap-2 text-[13px] font-semibold tracking-[.06em] uppercase text-goldSoft mb-6">
+      <span class="inline-block w-6 h-px bg-goldSoft/70"></span>Empieza hoy<span class="inline-block w-6 h-px bg-goldSoft/70"></span>
+    </div>
+    <h2 class="reveal d1 font-bold text-white text-[clamp(34px,4.8vw,58px)] leading-[1.08] max-w-[18ch] mx-auto">¿Listo para <span class="italic text-goldSoft">vender online</span>?</h2>
+    <p class="reveal d2 mt-5 text-[18px] text-white/75 font-light max-w-[46ch] mx-auto leading-relaxed">Cuéntanos tu negocio por WhatsApp y te enseñamos cómo quedaría tu tienda. Sin compromiso y sin coste.</p>
+    <div class="reveal d3 mt-9 flex justify-center">
+      <a href="https://wa.me/34600000000" target="_blank" rel="noopener" class="group inline-flex items-center gap-3 bg-wa hover:bg-waDark text-white font-semibold text-[18.5px] px-9 py-5 rounded-full no-underline transition-all shadow-[0_20px_44px_-14px_rgba(37,211,102,.6)] hover:-translate-y-0.5">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+        Pedir demo gratuita
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="bg-white border-t border-line">
+  <div class="max-w-shell mx-auto px-6 py-12 flex flex-col gap-7">
+    <div class="flex items-center justify-between gap-6 flex-wrap">
+      <a href="#top" class="no-underline flex items-center gap-2" style="height:30px">
+        <svg viewBox="0 0 96 96" height="30" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="35" width="60" height="47" rx="8" fill="#0a2540"/><path d="M12,24 Q12,19 17,19 H79 Q84,19 84,24 V34 a12,12 0 0 1 -24,0 a12,12 0 0 1 -24,0 a12,12 0 0 1 -24,0 Z" fill="#635bff"/><path d="M40,46 L40,73 L47,66 L51.4,75 L55.6,73 L51.2,64.2 L60,64 Z" fill="#ffffff"/></svg>
+        <span style="font-family:'Sora',system-ui,sans-serif;font-weight:700;font-size:16px;color:#0a2540">MiTiendaYa<span style="color:#635bff">.</span></span>
+      </a>
+      <nav class="flex gap-7 flex-wrap text-[14px] text-ink2">
+        <a href="#problema" class="hover:text-green transition-colors no-underline">El problema</a>
+        <a href="#como" class="hover:text-green transition-colors no-underline">Cómo funciona</a>
+        <a href="#precios" class="hover:text-green transition-colors no-underline">Precios</a>
+        <a href="#faq" class="hover:text-green transition-colors no-underline">Preguntas</a>
+        <a href="https://wa.me/34600000000" target="_blank" rel="noopener" class="hover:text-green transition-colors no-underline">WhatsApp</a>
+      </nav>
+    </div>
+    <div class="text-[13px] text-ink2/80 border-t border-line pt-6">© 2026 MiTiendaYa · Tiendas online gestionadas para el comercio de barrio · Hecho en España</div>
+  </div>
+</footer>
+
+<script>
+  // Sticky header: solid + shadow on scroll
+  const hd = document.getElementById('hd');
+  const onScroll = () => {
+    if (window.scrollY > 24) {
+      hd.classList.add('bg-white/90','backdrop-blur','shadow-[0_1px_0_rgba(14,32,24,.06),0_8px_24px_-16px_rgba(14,32,24,.3)]');
+    } else {
+      hd.classList.remove('bg-white/90','backdrop-blur','shadow-[0_1px_0_rgba(14,32,24,.06),0_8px_24px_-16px_rgba(14,32,24,.3)]');
+    }
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  // Scroll reveal with safety fallback (IO may not fire in some embeds)
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+    reveals.forEach(el => io.observe(el));
+    setTimeout(() => { document.querySelectorAll('.reveal:not(.in)').forEach(el => el.classList.add('in')); }, 1400);
+  } else {
+    reveals.forEach(el => el.classList.add('in'));
+  }
+
+  // FAQ accordion
+  document.querySelectorAll('.qa button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const qa = btn.closest('.qa');
+      const ans = qa.querySelector('.ans');
+      const open = qa.classList.contains('open');
+      document.querySelectorAll('.qa.open').forEach(o => {
+        o.classList.remove('open');
+        o.querySelector('.ans').style.maxHeight = null;
+      });
+      if (!open) {
+        qa.classList.add('open');
+        ans.style.maxHeight = ans.scrollHeight + 'px';
+      }
+    });
+  });
+</script>
+</body>
+</html>
